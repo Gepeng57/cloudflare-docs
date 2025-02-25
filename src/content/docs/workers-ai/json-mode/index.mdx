@@ -84,25 +84,31 @@ export const jsonModeResponseExample = `{
 
 When we want text-generation AI models to interact with databases, services, and external systems programmatically, typically when using tool calling or building AI agents, we must have structured response formats rather than natural language.
 
-Workers AI supports JSON mode, enabling applications to request a structured output response when interacting with AI models.
+Workers AI supports JSON Mode, enabling applications to request a structured output response when interacting with AI models.
 
-Here's a request to `@cf/meta/llama-3.1-8b-instruct-fp8-fast` using JSON mode:
+## Schema
 
-<Code code={jsonModeRequestExample} lang="json" />
-
-And here's the response from the model, in JSON:
-
-<Code code={jsonModeResponseExample} lang="json" />
-
-As you can see, the model is complying with the JSON schema definition in the request and responding with a validated JSON object.
-
-JSON mode is compatible with OpenAI’s implementation; to enable add the `response_format` property to the request object following this schema:
+JSON Mode is compatible with OpenAI’s implementation; to enable add the `response_format` property to the request object using the following convention:
 
 <Code code={jsonModeSchema} lang="json" />
 
 Where `json_schema` must be a valid [JSON Schema](https://json-schema.org/) declaration.
 
-This is the list of models that now support JSON mode:
+## JSON Mode example
+
+When using JSON Format, pass the schema as in the example below as part of the request you send to the LLM.
+
+<Code code={jsonModeRequestExample} lang="json" />
+
+The LLM will follow the schema, and return a response such as below:
+
+<Code code={jsonModeResponseExample} lang="json" />
+
+As you can see, the model is complying with the JSON schema definition in the request and responding with a validated JSON object.
+
+## Supported Models
+
+This is the list of models that now support JSON Mode:
 
 - [@cf/meta/llama-3.1-8b-instruct-fast](/workers-ai/models/llama-3.1-8b-instruct-fast/)
 - [@cf/meta/llama-3.1-70b-instruct](/workers-ai/models/llama-3.1-70b-instruct/)
