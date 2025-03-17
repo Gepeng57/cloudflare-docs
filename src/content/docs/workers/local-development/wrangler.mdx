@@ -9,7 +9,7 @@ description: Locally develop and test changes with `wrangler dev`
 
 import { Render, PackageManagers } from "~/components";
 
-## Start a local development server
+Wrangler provides a [`dev`](/workers/wrangler/commands/#dev) command that starts a local development server directly on your machine. It uses a combination of the Worker Runtime (`workerd`) and [Miniflare](https://github.com/cloudflare/workers-sdk/tree/main/packages/miniflare), a simulator that allows you to test your Worker against additional resources like [R2](/r2/), [KV](/kv), [D1](/d1), and [Durable Objects](/durable-objects).
 
 :::note
 
@@ -19,11 +19,15 @@ Users new to Wrangler CLI and Cloudflare Workers should visit the [Wrangler Inst
 
 :::
 
-Wrangler provides a [`dev`](/workers/wrangler/commands/#dev) command that starts a local server for developing your Worker. Make sure you have `npm` installed and run the following in the folder containing your Worker application:
+## Start a local development server
+
+To start a local development server for your Worker, navigate to your Worker’s project folder and run:
 
 <PackageManagers type="exec" pkg="wrangler" args="dev" />
 
-`wrangler dev` will run the Worker directly on your local machine. `wrangler dev` uses a combination of `workerd` and [Miniflare](https://github.com/cloudflare/workers-sdk/tree/main/packages/miniflare), a simulator that allows you to test your Worker against additional resources like KV, Durable Objects, WebSockets, and more.
+This command runs your Worker code locally, allowing you to test changes in real time. By default, it will store local data in a `.wrangler/state` folder in your project directory.
+
+---
 
 <Render file="bindings_per_env" />
 

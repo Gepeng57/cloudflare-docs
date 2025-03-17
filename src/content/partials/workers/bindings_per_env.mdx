@@ -2,30 +2,45 @@
 {}
 ---
 
-### Supported resource bindings in different environments
+### Binding Support: Local vs. Remote Development
 
-| Product                             | Local Dev Supported | Remote Dev Supported |
-| ----------------------------------- | ------------------- | -------------------- |
-| AI                                  | ✅[^1]              | ✅                   |
-| Assets                              | ✅                  | ✅                   |
-| Analytics Engine                    | ✅                  | ✅                   |
-| Browser Rendering                   | ❌                  | ✅                   |
-| D1                                  | ✅                  | ✅                   |
-| Durable Objects                     | ✅                  | ✅                   |
-| Email Bindings                      | ❌                  | ✅                   |
-| Hyperdrive                          | ✅                  | ✅                   |
-| Images                              | ✅                  | ✅                   |
-| KV                                  | ✅                  | ✅                   |
-| mTLS                                | ❌                  | ✅                   |
-| Queues                              | ✅                  | ❌                   |
-| R2                                  | ✅                  | ✅                   |
-| Rate Limiting                       | ✅                  | ✅                   |
-| Service Bindings (multiple Workers) | ✅                  | ✅                   |
-| Vectorize                           | ✅[^2]              | ✅                   |
-| Workflows                           | ✅                  | ❌                   |
+#### Local Development
 
-With any bindings that are not supported locally, you will need to use the [`--remote` command](#develop-using-remote-resources-and-bindings) in wrangler, such as `wrangler dev --remote`.
+Includes [Wrangler `dev`](/workers/wrangler/commands/#dev) without `--remote` and the [Cloudflare Vite plugin](/local-development/vite/). This mode simulates the Cloudflare Workers environment locally.
 
-[^1]: Using Workers AI always accesses your Cloudflare account in order to run AI models and will incur usage charges even in local development.
+#### Remote Development
 
-[^2]: Using Vectorize always accesses your Cloudflare account to run queries, and will incur usage charges even in local development.
+Uses [Wrangler `dev --remote`](/workers/wrangler/commands/#dev)), deploying your code to Cloudflare’s infrastructure during development. This ensures all bindings and resources match production conditions.
+
+| Binding                                 | Local (Wrangler & Vite) | Remote (Wrangler only) |
+| --------------------------------------- | :---------------------: | :--------------------: |
+| **AI**                                  |           ✅¹           |           ✅           |
+| **Assets**                              |           ✅            |           ✅           |
+| **Analytics Engine**                    |           ✅            |           ✅           |
+| **Browser Rendering**                   |           ❌            |           ✅           |
+| **D1**                                  |           ✅            |           ✅           |
+| **Durable Objects**                     |           ✅            |           ✅           |
+| **Email Bindings**                      |           ❌            |           ✅           |
+| **Hyperdrive**                          |           ✅            |           ✅           |
+| **Images**                              |           ✅            |           ✅           |
+| **KV**                                  |           ✅            |           ✅           |
+| **mTLS**                                |           ❌            |           ✅           |
+| **Queues**                              |           ✅            |           ❌           |
+| **R2**                                  |           ✅            |           ✅           |
+| **Rate Limiting**                       |           ✅            |           ✅           |
+| **Service Bindings (multiple Workers)** |           ✅            |           ✅           |
+| **Vectorize**                           |           ✅²           |           ✅           |
+| **Workflows**                           |           ✅            |           ❌           |
+
+¹ Using Workers AI always accesses your Cloudflare account to run AI models, incurring usage charges even during local development.
+² Using Vectorize always accesses your Cloudflare account to run queries, incurring usage charges even during local development.
+
+> **Tip:** If you need to use any bindings marked with ❌ under local development, run:
+>
+> ```bash
+> wrangler dev --remote
+> ```
+>
+> This uploads your code to Cloudflare so you can test those bindings against the real environment.
+
+---
