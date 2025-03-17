@@ -270,20 +270,5 @@ new_classes = ["DurableObjectExample"] # Array of new classes
 
 You can rename the `DurableObjectExample` class to `UpdatedName` and delete an outdated `DeprecatedClass` entirely. You can create separate migrations for each operation, or combine them into a single migration as shown below. */}
 
-## Enable SQLite storage backend on new Durable Object class migration
 
-To allow a new Durable Object class to use a SQLite storage backend, use `new_sqlite_classes` on the migration in your Worker's `wrangler` configuration file:
-
-<WranglerConfig>
-
-```toml
-[[migrations]]
-tag = "v1" # Should be unique for each entry
-new_sqlite_classes = ["MyDurableObject"] # Array of new classes
-```
-
-</WranglerConfig>
-
-:::caution
 You cannot enable a SQLite storage backend on an existing, deployed Durable Object class, so setting `new_sqlite_classes` on later migrations will fail with an error. Automatic migration of deployed classes from their key-value storage backend to SQLite storage backend will be available in the future.
-:::
