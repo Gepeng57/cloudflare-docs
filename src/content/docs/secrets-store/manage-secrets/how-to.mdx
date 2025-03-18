@@ -19,7 +19,7 @@ You must have a (TBC)[Super Administrator or Secrets Store admin role](/secrets-
 
 ## Duplicate a secret
 
-Duplicate a secret to keep the same secret value but change name, scope (once available), or comments.
+Duplicate a secret to keep the same secret value but change name, scope, or comments.
 
 1. Log in to the [Cloudflare dashboard](https://dash.cloudflare.com/) and select your account.
 2. Go to **Secrets Store**.
@@ -30,7 +30,11 @@ Duplicate a secret to keep the same secret value but change name, scope (once av
 
 ## Edit a secret
 
-Edit a secret to replace an existing value with a new one. This action will cause the replacement in all services using the secret.
+Edit a secret to replace an existing value with a new one.
+
+:::caution
+This action will cause the replacement in all services using the secret.
+:::
 
 You can also edit the secret **Permission scope** and **Comment**.
 
