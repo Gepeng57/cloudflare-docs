@@ -2893,17 +2893,14 @@
 	"secrets_store": {
 		"title": "Secrets Store",
 		"link": "/secrets-store/",
-		"secrets_management": {
-			"title": "Secrets managemet",
-			"link": "/secrets-store/manage-secrets/",
-			"properties": {
-				"secrets_count": {
-					"title": "Number of secrets",
-					"free": "1000",
-					"pro": "5000",
-					"biz": "10000",
-					"ent": "More than 10000"
-				}
+		"properties": {
+			"availability": {
+				"title": "Availability",
+				"summary": "Available in closed beta",
+				"free": "No",
+				"pro": "No",
+				"biz": "No",
+				"ent": "No"
 			}
 		}
 	},
