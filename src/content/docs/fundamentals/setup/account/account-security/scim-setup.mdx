@@ -16,10 +16,11 @@ This section covers SCIM provisioning for the Cloudflare dashboard only. If you 
 - If a user is the only Super Administrator on an Enterprise account, they will not be deprovisioned.
 - Cloudflare currently only supports [Account-scoped Roles](/fundamentals/setup/manage-members/roles/#account-scoped-roles) and does not support Domain-scoped Roles provisioning via SCIM.
 - Cloudflare does not allow custom user groups.
+- Cloudflare now supports the ability to sync custom User Groups via an upstream Identity Provider. This feature is in public beta Docs<Link> Blog<Link>
 
 ## Prerequisites
 
-- Cloudflare provisioning with SCIM is only available to Enterprise customers using Okta or Microsoft Entra.
+- Cloudflare provisioning with SCIM is only available to Enterprise customers using Okta or Microsoft Entra ID.
 - You must be a [Super Administrator](/fundamentals/setup/manage-members/roles/) on the account.
 - In your identity provider, you must have the ability to create applications and groups.
 
@@ -47,13 +48,11 @@ To start, you will need to collect a couple of pieces of data from Cloudflare an
    Cloudflare recommends using Account Owned API Tokens for SCIM Provisioning. Using user-specific API tokens, while supported, will lead to a broken SCIM connection in the event that the user's policies are revoked from the account with the SCIM integration. Learn more about [account owned tokens](/fundamentals/api/get-started/account-owned-tokens/).
    :::
 
-2. Under **Account Resources**, select the specific account to include or exclude from the dropdown menu, if applicable.
+2. Select **Continue to summary**.
 
-3. Select **Continue to summary**.
+3. Validate the permissions and select **Create Token**.
 
-4. Validate the permissions and select **Create Token**.
-
-5. Copy the token value.
+4. Copy the token value.
 
 ---
 
@@ -81,43 +80,28 @@ The **Update User Attributes** option is not supported.
 
 1. In your integration page, go to **Provisioning** > **Configure API Integration**.
 2. Enable **Enable API Integration**.
-3. In SCIM 2.0 Base URL, enter: `https://api.cloudflare.com/client/v4/accounts/<accountID>/scim/v2`.
-4. In OAuth Bearer Token, enter your API token value.
-5. Select **Save**.
+3. In SCIM 2.0 Base URL, enter: `https://api.cloudflare.com/client/v4/accounts/<accountID>/scim/v2`, substituting `accountID` for your [Cloudflare Account ID](/fundamentals/setup/account/account-security/scim-setup/#get-your-account-id).
+4. In the **OAuth Bearer Token** field, enter your API token value.
+5. Deselect **Import Groups**.
 
-### Set up your SCIM users
+
+### Set up your SCIM users and groups
 
 1. In **Provisioning to App**, select **Edit**.
 2. Enable **Create Users** and **Deactivate Users**. Select **Save**.
-3. In the integration page, go to **Assignments** > **Assign** > **Assign to Groups**.
-4. Choose the group(s) that you want to provision to Cloudflare.
-5. Select **Done**.
+3. Select **Done**.
+4. In the Assignments tab, add the users you want to synchronize with Cloudflare Dash. You can add users in batches by assigning a group. If a user is removed from the application assignment via either direct user assignment or removed from the group that was assigned to the app, this will trigger a deprovisioning event from Okta to Cloudflare. 
+5. In the Push Groups tab, add the Okta groups you want to synchronize with Cloudflare Dash. You can view these groups in the dash under Manage Account > Manage members > Members > User Groups.
+
+:::note
+You must have opted into the Cloudflare User Groups Public Beta to synchronize groups from Okta to Cloudflare. Refer to the [Usesr Groups](/fundamentals/setup/manage-members/user-groups/) documentation for more information.
+:::
+
+To verify the integration, select **View Logs** in the Okta SCIM application, and check the Cloudflare Dash Audit Logs by navigating to **Manage Account** > **Audit Log**. 
+
+To grant permissions to Users & Groups in Cloudflare, refer to the Permission Policies guide.
 
 This will provision all of the users in the group(s) affected to your Cloudflare account with "minimal account access."
-
-### Configure user permissions
-
-Two options exist for managing user permissions:
-
-* Manage your user permissions on a per-user basis in the Cloudflare dashboard, API, or using Terraform.
-* Map your IdP groups to a Cloudflare built-in [Role](/fundamentals/setup/manage-members/roles/). Groups may only be linked to one role.
-
-1. Go to your SCIM application in the App Integration Catalog, then select **Provisioning**.
-2. Under **To App*, select **Edit**.
-3. Enable **Create Users** and **Deactivate Users**. Select **Save**.
-4. Go to **Push Groups**.
-5. Select **+ Push Groups**, then **Find groups by name**.
-6. Enter the name of the group(s) that you want to sync to Cloudflare.
-7. Choose **Link Group**.
-8. Cloudflare provisioned user groups are named in the pattern `CF-<accountID> - <Role Name>`. Choose the appropriate group that maps to your target role.
-9. Disable **Rename groups**. Select **Save**.
-10. Within the **Push Groups** tab, select **Push Groups**.
-11. Add the groups you created.
-12. Select **Save**.
-
-Adding any users to these groups will grant them the role. Removing the users from the identity provider will remove them from the associated role.
-
----
 
 ## Provision with Microsoft Entra ID
 
@@ -137,23 +121,24 @@ Adding any users to these groups will grant them the role. Removing the users fr
 
 ### Configure user permissions in Microsoft Entra ID
 
+1. Once the SCIM application is created, [assign users and groups to the application](https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/assign-user-or-group-access-portal?pivots=portal.)
+
+:::note
+You must have opted into the Cloudflare User Groups Public Beta to synchronize groups from Okta to Cloudflare<link to User Groups docs>
+
 Currently, groups need to match a specific format to provision specific Cloudflare account-level roles. Cloudflare is in the process of adding Cloudflare Groups, which can take in freeform group names in the future.
+:::
 
-These permissions work on an exact string match with the form `CF-<your_account_ID> - <Role_Name>`
-
-Refer to the list of [Roles](/fundamentals/setup/manage-members/roles/) for more details.
-
-1. To ensure that only required groups are provisioned, go to your Microsoft Entra ID instance.
-2. Under Manage on the sidebar menu, select **Provisioning**.
-3. Select **Provision Entra Groups** in Mappings.
-4. Select **All records** under Source Object Scope.
-5. Select **Add scoping filter** and create the appropriate filtering criteria to capture only the necessary groups.
-6. Save the Attribute Mapping by selecting **OK** and return to the Enterprise Application Provisioning overview page.
-7. Select **Start provisioning** to view the new users and groups populated on the Cloudflare dashboard.
+2. To begin syncing your Users & Groups into Cloudflare, navigate back to **Provisioning**, and under **Provisioning Status**, check *On*, then select **Save**. 
 
 :::note
 To successfully provision with Microsoft Entra ID, the `user principal name` and `email` fields must match. These values are case-sensitive.
 :::
+
+3. To check which users and groups were synchronized, select **Provisioning logs**. 
+4. To verify the integration, select **Provisioning Logs** in Entra ID application, and check the Cloudflare Dash Audit Logs by navigating to **Manage Account** > **Audit Log**. 
+5. To grant permissions to Users & Groups in Cloudflare, refer to the Permission Policies guide.
+
 
 ### Automate Cloudflare's SCIM integration
 
