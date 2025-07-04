@@ -21,14 +21,14 @@ Built on Cloudflare's infrastructure, agents are stateful classes that run on Du
 
 ## Quick start
 
-```sh
+```bash
 npm create cloudflare@latest my-agent -- --template=cloudflare/agents-starter
 cd my-agent && npx wrangler dev
 ```
 
 Or add to an existing project:
 
-```sh
+```bash
 npm install agents
 ```
 
@@ -38,7 +38,7 @@ Create a simple joke agent that remembers previous interactions:
 
 <TypeScriptExample>
 
-```ts
+```typescript
 import { Agent } from "agents";
 
 export class JokeAgent extends Agent {
@@ -49,14 +49,14 @@ export class JokeAgent extends Agent {
 
 	async onMessage(connection, message) {
 		const response = await this.ai.run(`
-			You are a friendly joke-telling agent.
-			Previous jokes shared: ${this.state.jokesShared}
-			User message: "${message}"
+      You are a friendly joke-telling agent.
+      Previous jokes shared: ${this.state.jokesShared}
+      User message: "${message}"
 
-			If they ask for a joke, tell them one.
-			If they mention a joke type they like, remember it.
-			Be conversational and fun!
-		`);
+      If they ask for a joke, tell them one.
+      If they mention a joke type they like, remember it.
+      Be conversational and fun!
+    `);
 
 		connection.send(response);
 
@@ -78,72 +78,6 @@ export default {
 </TypeScriptExample>
 
 This agent remembers how many jokes it has shared and adapts its responses based on conversation history.
-
-## Building your first agent
-
-Follow these steps to create an agent that can autonomously handle tasks:
-
-### 1. Define agent identity and tools
-
-```ts
-export class CustomerServiceAgent extends Agent {
-	initialState = {
-		name: "CustomerServiceAgent",
-		role: "Customer support specialist",
-		conversationHistory: [],
-		availableTools: ["search_docs", "create_ticket", "escalate"],
-	};
-}
-```
-
-### 2. Add decision-making logic
-
-```ts
-async onMessage(connection, message) {
-  // Agent analyzes request and decides on actions
-  const analysis = await this.ai.run(`
-    As ${this.state.name}, analyze this customer request: "${message}"
-
-    Available tools: ${this.state.availableTools.join(', ')}
-
-    Decide what actions to take and respond appropriately.
-  `);
-
-  // Execute chosen actions
-  const response = await this.executeActions(analysis, message);
-  connection.send(response);
-}
-```
-
-### 3. Implement persistent memory
-
-```ts
-async executeActions(analysis, originalMessage) {
-  // Update conversation history
-  await this.setState({
-    conversationHistory: [
-      ...this.state.conversationHistory,
-      { message: originalMessage, timestamp: Date.now() }
-    ]
-  });
-
-  // Agent remembers context for future interactions
-  return analysis;
-}
-```
-
-### 4. Deploy and test
-
-```bash
-npm run dev
-# Your agent is now running with autonomous decision-making
-```
-
-> **Testing locally**: Use `wrangler dev` or `vitest` to test against Durable Objects and Agents locally.
-
-Your agent can now autonomously decide on sequences of actions, maintain memory across conversations, and consistently apply its role and tools.
-
-> Want a complete example? Follow our [Build a Chat Agent](/agents/getting-started/build-a-chat-agent) tutorial to create a fully functional conversational agent with memory and context.
 
 ## Core capabilities
 
