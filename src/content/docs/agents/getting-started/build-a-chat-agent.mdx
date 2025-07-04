@@ -4,90 +4,42 @@ pcx_content_type: tutorial
 sidebar:
   order: 3
 head: []
-description: Build an AI-powered chat agent that maintains conversation context and provides intelligent responses using Cloudflare's Agent platform.
+description: Build a streaming AI chat agent with tool integration using Cloudflare Workers and the Agents framework.
 ---
 
 import { TypeScriptExample } from "~/components";
 
-This tutorial walks you through building a chat agent that can hold conversations, remember context, and provide intelligent responses.
+A complete guide to building a streaming AI chat agent with tool integration using Cloudflare Workers and the Agents framework.
 
 > **Complete example**: See the full implementation in the [agents-starter repository](https://github.com/cloudflare/agents-starter) on GitHub.
 
-## What you'll build
-
-A chat agent that:
-- Maintains conversation history
-- Provides contextual responses
-- Handles different types of user queries
-- Remembers user preferences
-
 ## Prerequisites
 
-- Node.js 18+ installed
-- Basic knowledge of JavaScript/TypeScript
+- Node.js 18+ 
+- npm or yarn
 - Cloudflare account
+- OpenAI API key
 
 ## Step 1: Set up the project
 
 ```bash
+# Create the project using the Cloudflare agents starter template
 npm create cloudflare@latest chat-agent -- --template=cloudflare/agents-starter
+
+# Navigate to the project directory
 cd chat-agent
+
+# Install dependencies
 npm install
 ```
 
-## Step 2: Explore the chat agent
+## Step 2: Configure your environment
 
-The starter template includes a complete chat agent in `src/server.ts`. Let's examine the key parts:
+You have two options for setting up your OpenAI API key:
 
-<TypeScriptExample>
+**Option A: Using wrangler.jsonc (recommended for production)**
 
-```ts
-import { AIChatAgent } from "agents";
-
-export class ChatAgent extends AIChatAgent {
-  async onChatMessage(messages, { tools, toolsRequestInProgress }) {
-    // Process any pending tool calls
-    const { messages: updatedMessages } = await this.processTool(
-      messages,
-      tools,
-      toolsRequestInProgress
-    );
-
-    // Generate streaming response
-    const stream = this.ai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content: this.getSystemPrompt(),
-        },
-        ...updatedMessages,
-      ],
-      tools: this.getTools(),
-      stream: true,
-    });
-
-    return this.streamResponse(stream);
-  }
-
-  getSystemPrompt() {
-    return `You are a helpful AI assistant. You can help users with various tasks and answer questions.`;
-  }
-
-  getTools() {
-    // Tools are defined in src/tools.ts
-    return collectTools();
-  }
-}
-```
-
-</TypeScriptExample>
-
-## Step 3: Configure your environment
-
-The starter includes a `wrangler.jsonc` configuration. Add your OpenAI API key:
-
-```jsonc
+```json
 {
   "compatibility_date": "2024-09-23",
   "compatibility_flags": ["nodejs_compat"],
@@ -100,99 +52,213 @@ The starter includes a `wrangler.jsonc` configuration. Add your OpenAI API key:
 }
 ```
 
-Or set it as an environment variable:
+**Option B: Using .dev.vars (recommended for development)**
 
 ```bash
-echo "OPENAI_API_KEY=your-key-here" > .env
+echo "OPENAI_API_KEY=your-key-here" > .dev.vars
 ```
 
-## Step 4: Test the agent
+## Step 3: Test the agent locally
 
 ```bash
-npm run dev
+# Start the development server
+npm start
+
+# The server will be available at http://localhost:5174
 ```
 
-Open your browser to `http://localhost:8787` and start chatting. The interface includes:
+Open your browser to `http://localhost:5174` and start chatting!
 
-- **Chat interface**: Send messages and receive streaming responses
-- **Tool integration**: The agent can execute tools with confirmation
-- **Dark/light mode**: Toggle themes in the UI
-- **Debug mode**: View detailed message processing
+## Understanding the code
 
-## Step 5: Customize your agent
+### Project structure
 
-### Add custom tools
+```
+chat-agent/
+├── src/
+│   ├── server.ts      # Main agent implementation
+│   ├── tools.ts       # Tool definitions
+│   ├── app.tsx        # React frontend
+│   └── ...
+├── wrangler.jsonc     # Cloudflare configuration
+└── package.json
+```
 
-Create tools in `src/tools.ts`:
+### Key components
+
+#### Chat Agent (`src/server.ts`)
+
+The main agent class that handles chat interactions:
+
+<TypeScriptExample>
 
 ```ts
-import { tool } from "agents";
+import { AIChatAgent } from "agents/ai-chat-agent";
 
-export const getWeather = tool({
-  description: "Get current weather for a location",
-  parameters: {
-    type: "object",
-    properties: {
-      location: {
-        type: "string",
-        description: "The city name",
-      },
-    },
-    required: ["location"],
+export class Chat extends AIChatAgent<Env> {
+  async onChatMessage(onFinish, options) {
+    // Handles incoming messages and manages streaming responses
+    // Processes tool calls and generates AI responses
+  }
+}
+```
+
+</TypeScriptExample>
+
+#### Tools (`src/tools.ts`)
+
+Define what actions your agent can perform:
+
+<TypeScriptExample>
+
+```ts
+import { tool } from "ai";
+import { z } from "zod";
+
+// Automatic execution (no confirmation needed)
+const getLocalTime = tool({
+  description: "get the local time for a specified location",
+  parameters: z.object({ location: z.string() }),
+  execute: async ({ location }) => {
+    return "10am";
   },
+});
+
+// Requires confirmation (no execute function)
+const getWeatherInformation = tool({
+  description: "show the weather in a given city to the user",
+  parameters: z.object({ city: z.string() }),
+  // Omitting execute function makes this tool require human confirmation
+});
+```
+
+</TypeScriptExample>
+
+## Customization
+
+### Adding custom tools
+
+**Simple Tool (Automatic Execution)**
+
+<TypeScriptExample>
+
+```ts
+// In src/tools.ts
+const getWeather = tool({
+  description: "Get current weather for a location",
+  parameters: z.object({
+    location: z.string().describe("The city name"),
+  }),
   execute: async ({ location }) => {
     // Call weather API
     return `The weather in ${location} is sunny and 72°F`;
   },
 });
+
+// Add to exports
+export const tools = {
+  // ... existing tools
+  getWeather,
+};
 ```
 
-### Customize the system prompt
+</TypeScriptExample>
+
+**Confirmation-Required Tool**
+
+<TypeScriptExample>
 
 ```ts
-export class ChatAgent extends AIChatAgent {
-  getSystemPrompt() {
-    return `You are a helpful assistant specializing in software development.
-    You can help with coding questions, debugging, and best practices.
-    Always provide clear, actionable advice.`;
-  }
-}
-```
-
-### Add tool confirmation
-
-```ts
-export const sensitiveAction = tool({
+// In src/tools.ts
+const sensitiveAction = tool({
   description: "Perform a sensitive action",
-  parameters: { /* ... */ },
-  requiresConfirmation: true, // Requires user confirmation
-  execute: async (params) => {
-    // Execute after confirmation
-    return "Action completed successfully";
-  },
+  parameters: z.object({
+    action: z.string().describe("The action to perform"),
+    reason: z.string().describe("Reason for the action"),
+  }),
+  // Omitting execute function makes this tool require human confirmation
 });
+
+// Add to exports
+export const tools = {
+  // ... existing tools
+  sensitiveAction,
+};
+
+// Add execution function
+export const executions = {
+  // ... existing executions
+  sensitiveAction: async ({ action, reason }) => {
+    return `Action "${action}" completed successfully. Reason: ${reason}`;
+  },
+};
 ```
 
-## Step 6: Deploy
+</TypeScriptExample>
+
+### Customizing the system prompt
+
+Edit the system prompt in `src/server.ts`:
+
+```ts
+system: `You are a helpful assistant specializing in software development.
+You can help with coding questions, debugging, and best practices.
+Always provide clear, actionable advice.
+
+${unstable_getSchedulePrompt({ date: new Date() })}
+
+If the user asks to schedule a task, use the schedule tool to schedule the task.
+`,
+```
+
+## Deploy to Cloudflare Workers
 
 ```bash
+# Deploy to production
 npm run deploy
 ```
 
-Your chat agent is now live with streaming responses and tool integration!
+Your agent will be available at: `https://your-project-name.your-subdomain.workers.dev`
 
-## Next steps
+### Environment variables in production
 
-- Add custom tools for your specific use case
-- Integrate with external APIs and databases
-- Customize the UI theme and components
-- Add user authentication and personalization
-- Set up monitoring and analytics
+For production deployment, set your OpenAI API key as a secret:
+
+```bash
+# Set the OpenAI API key as a secret
+wrangler secret put OPENAI_API_KEY
+```
+
+## Features
+
+- **Streaming Responses**: Real-time AI responses with typing indicators
+- **Tool Integration**: Execute actions with or without user confirmation
+- **Task Scheduling**: Schedule tasks to run at specific times
+- **Modern UI**: Dark/light mode, responsive design
+- **Debug Mode**: View detailed message processing
+- **Type Safety**: Full TypeScript support
 
 ## Troubleshooting
 
-**No responses**: Verify your OpenAI API key is set in `wrangler.jsonc` or as an environment variable.
+### Common issues
 
-**Tool errors**: Check tool definitions in `src/tools.ts` and ensure required parameters are provided.
+**"OPENAI_API_KEY is not set"**
+- Make sure you've set the API key in `.dev.vars` or `wrangler.jsonc`
+- For production, use `wrangler secret put OPENAI_API_KEY`
 
-**Build issues**: Run `npm install` and check that all dependencies are properly installed.
+**"npm run dev" not found**
+- Use `npm start` instead (the script is named "start")
+
+**Server not accessible**
+- Check that the server is running on port 5174 (not 8787)
+- Look for the correct URL in the terminal output
+
+**Tool execution errors**
+- Make sure tools are properly exported in `tools` object
+- Check that confirmation-required tools have execution functions in `executions`
+
+### Development tips
+
+- Use the browser's developer tools to see detailed error messages
+- Check the terminal output for server logs
+- The debug mode in the UI shows detailed message processing
