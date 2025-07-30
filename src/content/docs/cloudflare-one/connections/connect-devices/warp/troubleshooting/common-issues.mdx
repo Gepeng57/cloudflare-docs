@@ -189,6 +189,64 @@ Some applications require traffic to flow either all inside or all outside of th
 2. In [Zero Trust](https://one.dash.cloudflare.com/), go to your [Split Tunnel settings](/cloudflare-one/connections/connect-devices/warp/configure-warp/route-traffic/split-tunnels/).
 3. Depending on the application, either include or exclude all of the necessary IPs and/or domains. For Microsoft applications, we provide a [one-click action](/cloudflare-one/connections/connect-devices/warp/configure-warp/warp-settings/#directly-route-microsoft-365-traffic) to exclude all Microsoft 365 IPs.
 
+## macOS general network failure
+
+Below are the most common reasons why with WARP enabled general network failure may be noticed.
+
+### Packet Filter State Exhaustion
+
+The Packet Filter (PF) state table reaching its capacity on macOS. This can block new network connections from being created leading to general network failure.
+
+#### Solution
+
+The WARP client has aimed to reduce the amount of states kept in the PF's state table in recent releases. The primary recommendation is to update the client to at least 2025.2.664.0. If this is not possible a workaround can be to increase the number of states available for PF to use. This can be done as such
+
+```txt
+sudo nano /etc/pf.conf
+```
+
+This file you will need to modified to include `set limit states xxxxx`. It's important that the the limit adjustment come before the anchors to maintain the correct syntax for PF. The default is often 10,000, so you will need to set this higher, e.g., 20,000, depending on your network activity. Be careful not to set it excessively high without sufficient RAM, as PF states reside in memory. An example can be seen below.
+
+```txt
+#
+# Default PF configuration file.
+#
+# This file contains the main ruleset, which gets automatically loaded
+# at startup.  PF will not be automatically enabled, however.  Instead,
+# each component which utilizes PF is responsible for enabling and disabling
+# PF via -E and -X as documented in pfctl(8).  That will ensure that PF
+# is disabled only when the last enable reference is released.
+#
+# Care must be taken to ensure that the main ruleset does not get flushed,
+# as the nested anchors rely on the anchor point defined here. In addition,
+# to the anchors loaded by this file, some system services would dynamically
+# insert anchors into the main ruleset. These anchors will be added only when
+# the system service is used and would removed on termination of the service.
+#
+# See pf.conf(5) for syntax.
+#
+
+set limit states 20000
+ 
+#
+# com.apple anchor point
+#
+scrub-anchor "com.apple/*"
+nat-anchor "com.apple/*"
+rdr-anchor "com.apple/*"
+dummynet-anchor "com.apple/*"
+anchor "com.apple/*"
+load anchor "com.apple" from "/etc/pf.anchors/com.apple"
+```
+
+After this you'll need to restart the pfctl service via the following. 
+
+```txt
+sudo pfctl -F all  # Flush all existing rules and states
+sudo pfctl -f /etc/pf.conf # Load the new configuration
+sudo pfctl -e # Enable PF (if it's not already enabled)
+```
+
 ## Troubleshooting
 
 - [Troubleshooting](/cloudflare-one/faq/troubleshooting/) - Browse other Cloudflare One-related troubleshooting errors and solutions.
