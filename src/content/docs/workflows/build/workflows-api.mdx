@@ -1,5 +1,5 @@
 ---
-title: Workers API
+title: Workflows API
 pcx_content_type: concept
 sidebar:
   order: 2
@@ -29,7 +29,7 @@ export class MyWorkflow extends WorkflowEntrypoint<Env, Params> {
   * `event` - the event passed to the Workflow, including an optional `payload` containing data (parameters)
   * `step` - the `WorkflowStep` type that provides the step methods for your Workflow
 
-The `run` method can optionally return data, which is available when querying the instance status via the [Workers API](/workflows/build/workers-api/#instancestatus), [REST API](/api/resources/workflows/subresources/instances/subresources/status/) and the Workflows dashboard. This can be useful if your Workflow is computing a result, returning the key to data stored in object storage, or generating some kind of identifier you need to act on.
+The `run` method can optionally return data, which is available when querying the instance status via the [Workers API](/workflows/build/workflows-api/#instancestatus), [REST API](/api/resources/workflows/subresources/instances/subresources/status/) and the Workflows dashboard. This can be useful if your Workflow is computing a result, returning the key to data stored in object storage, or generating some kind of identifier you need to act on.
 
 ```ts
 export class MyWorkflow extends WorkflowEntrypoint<Env, Params> {
