@@ -8,5 +8,18 @@
 | [WARP](/cloudflare-one/connections/connect-devices/warp/)                                  | ✅            |
 | [PAC files](/cloudflare-one/connections/connect-devices/agentless/pac-files/)              | ✅            |
 | [Browser Isolation](/cloudflare-one/policies/browser-isolation/)                           | ✅            |
-| [Magic WAN](/magic-wan/zero-trust/cloudflare-gateway/)                                     | ❌            |
-| [WARP Connector](/cloudflare-one/connections/connect-networks/private-net/warp-connector/) | ❌            |
+| [Magic WAN](/magic-wan/zero-trust/cloudflare-gateway/)                                     | 🚧[^1]        |
+| [WARP Connector](/cloudflare-one/connections/connect-networks/private-net/warp-connector/) | ✅            |
+
+[^1]: Not compatible with [ECMP routing](/magic-wan/reference/traffic-steering/#equal-cost-multi-path-routing). For hostname-based routing to work, DNS queries and the resulting network traffic must reach Cloudflare over the same Magic WAN tunnel. <br/>
+
+:::note[WARP Connector and Magic WAN]
+
+DNS traffic to the Gateway resolver must route through Cloudflare's network instead of over the public Internet. If your devices are behind WARP Connector, you may need to [configure your router](/cloudflare-one/connections/connect-networks/private-net/warp-connector/site-to-internet/#3-route-traffic-from-subnet-to-warp-connector) to route the Gateway resolver IPs through WARP Connector. If your devices are behind Magic WAN, [create a route](/magic-wan/configuration/manually/how-to/configure-routes/) to route the Gateway resolver IPs through the Magic WAN tunnel.
+
+The Gateway resolver IPs are:
+
+- `172.64.36.1`
+- `172.64.36.2`
+
+:::
