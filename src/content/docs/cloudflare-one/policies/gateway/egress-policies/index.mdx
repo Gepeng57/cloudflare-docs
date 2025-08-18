@@ -5,7 +5,15 @@ sidebar:
   order: 5
 ---
 
-import { Render, Badge, Tabs, TabItem, Details, GlossaryTooltip } from "~/components";
+import {
+	Render,
+	Badge,
+	Tabs,
+	TabItem,
+	Details,
+	GlossaryTooltip,
+	APIRequest,
+} from "~/components";
 
 :::note
 Only available on Enterprise plans.
@@ -207,35 +215,34 @@ To turn on the selectors for your account:
 
 Use the [Patch Zero Trust account configuration](/api/resources/zero_trust/subresources/gateway/subresources/configurations/methods/edit/) endpoint to update your Zero Trust configuration. For example:
 
-```sh title="Turn on selectors for egress policies"
-curl --request PATCH \
-"https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/gateway/configuration" \
---header "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
---header "Content-Type: application/json" \
---data '{
-  "settings": {
-    "host_selector": {
-      "enabled": true
-		}
-	}
-}'
-```
+<APIRequest
+	path="/accounts/{account_id}/gateway/configuration"
+	method="PATCH"
+	json={{
+		settings: {
+			host_selector: {
+				enabled: true,
+			},
+		},
+	}}
+/>
 
 </TabItem> </Tabs>
 
 Additionally, to use these selectors to filter traffic onboarded with WARP, you need to:
 
-1. Ensure you have deployed [WARP version 2025.4.929.0](/cloudflare-one/connections/connect-devices/warp/download-warp/) or later on your users' desktop devices. If you need to apply your policies to mobile devices or devices running a version of WARP prior to 2025.4.929.0, add and deploy the following key-value pair to your devices' [WARP configuration file](/cloudflare-one/connections/connect-devices/warp/deployment/mdm-deployment/) (`mdm.xml` on Windows and Linux or `com.cloudflare.warp.plist` on macOS):
+1.  Ensure you have deployed [WARP version 2025.4.929.0](/cloudflare-one/connections/connect-devices/warp/download-warp/) or later on your users' desktop devices. If you need to apply your policies to mobile devices or devices running a version of WARP prior to 2025.4.929.0, add and deploy the following key-value pair to your devices' [WARP configuration file](/cloudflare-one/connections/connect-devices/warp/deployment/mdm-deployment/) (`mdm.xml` on Windows and Linux or `com.cloudflare.warp.plist` on macOS):
 
-   ```diff lang="xml"
-   <array>
-   	<dict>
-   +		<key>doh_in_tunnel</key>
-   +		<true/>
-   	</dict>
-   </array>
-   ```
+    ```diff lang="xml"
+    <array>
+    	<dict>
+    +		<key>doh_in_tunnel</key>
+    +		<true/>
+    	</dict>
+    </array>
+    ```
 
 2. <Render file="gateway/egress-selector-split-tunnels" />
 
 The WARP client must be set to _Gateway with WARP_ mode for traffic affected by these selectors to route correctly.
+

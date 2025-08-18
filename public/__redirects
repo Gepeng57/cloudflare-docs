@@ -1,6 +1,7 @@
 # homepage
 /api /api/ 301
-/docs/ /products/ 301
+/docs/ /directory/ 301
+/products/ /directory/ 301
 /zero-trust/ /products/?product-group=Cloudflare+One 301
 /dashboard-landing/ / 301
 /tutorials/ /search/?content_type%5B0%5D=Tutorial 301
@@ -2357,3 +2358,7 @@
 /realtime/example-architecture /realtime/sfu/example-architecture/ 302
 /realtime/pricing /realtime/sfu/pricing/ 302
 /realtime/changelog /realtime/sfu/changelog/ 302
+
+/realtime/realtimekit/get-started /realtime/realtimekit/getting-started/ 302
+/realtime/introduction /realtime/realtimekit/introduction 302
+/realtime/concepts /realtime/realtimekit/concepts 302
