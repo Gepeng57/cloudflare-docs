@@ -1,7 +1,7 @@
 ---
 title: Hyperdrive
 order: 0
-type: overview
+
 pcx_content_type: overview
 sidebar:
   order: 1
@@ -61,7 +61,7 @@ export default {
 
 } satisfies ExportedHandler<{ HYPERDRIVE: Hyperdrive }>;
 
-```
+````
 
     </TabItem>
     <TabItem label="wrangler.jsonc">
@@ -85,7 +85,7 @@ export default {
 			}
 		]
 	}
-```
+````
 
 </TabItem>
 </Tabs>
@@ -108,19 +108,20 @@ export default {
      // This is needed to use mysql2 with Workers
      // This configures mysql2 to use static parsing instead of eval() parsing (not available on Workers)
      disableEval: true
-  });
 
-  const [results, fields] = await connection.query('SHOW tables;');
+});
 
-  return new Response(JSON.stringify({ results, fields }), {
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '\*',
-    },
-  });
+const [results, fields] = await connection.query('SHOW tables;');
+
+return new Response(JSON.stringify({ results, fields }), {
+headers: {
+'Content-Type': 'application/json',
+'Access-Control-Allow-Origin': '\*',
+},
+});
 }} satisfies ExportedHandler<Env>;
 
-```
+````
 
     </TabItem>
     <TabItem label="wrangler.jsonc">
@@ -144,7 +145,7 @@ export default {
 			}
 		]
 	}
-```
+````
 
 </TabItem>
 </Tabs>

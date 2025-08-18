@@ -1,5 +1,4 @@
 ---
-type: example
 summary: Stream ReadableStream from Durable Objects.
 pcx_content_type: example
 title: Use ReadableStream with Durable Object and Workers
@@ -8,7 +7,11 @@ sidebar:
 description: Stream ReadableStream from Durable Objects.
 ---
 
-import { GlossaryTooltip, WranglerConfig, TypeScriptExample } from "~/components";
+import {
+	GlossaryTooltip,
+	WranglerConfig,
+	TypeScriptExample,
+} from "~/components";
 
 This example demonstrates:
 
@@ -22,14 +25,15 @@ This example demonstrates:
 import { DurableObject } from 'cloudflare:workers';
 
 // Send incremented counter value every second
-async function* dataSource(signal: AbortSignal) {
-    let counter = 0;
-    while (!signal.aborted) {
-        yield counter++;
-        await new Promise((resolve) => setTimeout(resolve, 1_000));
-    }
+async function\* dataSource(signal: AbortSignal) {
+let counter = 0;
+while (!signal.aborted) {
+yield counter++;
+await new Promise((resolve) => setTimeout(resolve, 1_000));
+}
 
     console.log('Data source cancelled');
+
 }
 
 export class MyDurableObject extends DurableObject<Env> {
@@ -60,6 +64,7 @@ export class MyDurableObject extends DurableObject<Env> {
 
         return new Response(stream, { headers });
     }
+
 }
 
 export default {
@@ -96,7 +101,9 @@ export default {
 
         return Response.json(data);
     },
+
 } satisfies ExportedHandler<Env>;
+
 ```
 </TypeScriptExample>
 
@@ -105,3 +112,4 @@ export default {
 In a setup where a Durable Object returns a readable stream to a Worker, if the Worker cancels the Durable Object's readable stream, the cancellation propagates to the Durable Object.
 
 :::
+```

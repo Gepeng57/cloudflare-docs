@@ -1,5 +1,4 @@
 ---
-type: example
 summary: A simple frontend app with a containerized backend
 pcx_content_type: example
 title: Static Frontend, Container Backend
@@ -186,11 +185,11 @@ import (
 )
 
 func handler(w http.ResponseWriter, r \*http.Request) {
-    widgets := []map[string]interface{}{
-        {"id": 1, "name": "Widget A"},
-        {"id": 2, "name": "Sprocket B"},
-        {"id": 3, "name": "Gear C"},
-    }
+widgets := []map[string]interface{}{
+{"id": 1, "name": "Widget A"},
+{"id": 2, "name": "Sprocket B"},
+{"id": 3, "name": "Gear C"},
+}
 
     w.Header().Set("Content-Type", "application/json")
     w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -199,9 +198,10 @@ func handler(w http.ResponseWriter, r \*http.Request) {
 }
 
 func main() {
-    http.HandleFunc("/api/widgets", handler)
-    log.Fatal(http.ListenAndServe(":8080", nil))
+http.HandleFunc("/api/widgets", handler)
+log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 ```
 </Details>
+```

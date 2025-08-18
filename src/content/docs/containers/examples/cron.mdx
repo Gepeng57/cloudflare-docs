@@ -1,5 +1,4 @@
 ---
-type: example
 summary: Running a container on a schedule using Cron Triggers
 pcx_content_type: example
 title: Cron Container
@@ -43,9 +42,7 @@ Use a cron expression in your Wrangler config to specify the schedule:
 	},
 	"migrations": [
 		{
-			"new_sqlite_classes": [
-				"CronContainer"
-			],
+			"new_sqlite_classes": ["CronContainer"],
 			"tag": "v1"
 		}
 	]

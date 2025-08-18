@@ -1,15 +1,15 @@
 ---
 title: Configure Schema Validation via the API
 pcx_content_type: how-to
-type: overview
+
 sidebar:
-    label: API
+  label: API
 head:
   - tag: title
     content: Configure Schema Validation
 ---
 
-import { GlossaryTooltip, Steps, APIRequest } from "~/components"
+import { GlossaryTooltip, Steps, APIRequest } from "~/components";
 
 Schema Validation 2.0 allows all corresponding configuration calls to be made via API. This validation centers more around individual <GlossaryTooltip term="API endpoint">endpoints</GlossaryTooltip> and lets you set mitigation actions for each endpoint individually. Additionally, you can use Cloudflare-provided learned schemas that we [learn automatically](/api-shield/management-and-monitoring/#endpoint-schema-learning) from your traffic for individual endpoints.
 
@@ -21,17 +21,14 @@ Schema Validation 2.0 allows all corresponding configuration calls to be made vi
 ## Upload schemas via the API to Schema Validation
 
 <Steps>
-1. Upload a schema.
-2. Ensure that your endpoints are added in Endpoint Management.
-3. Set the schema to `active` if it is not already done.
-4. Set the Schema Validation zone-wide action from `none` to `log`.
-5. Send test traffic that violates the schema.
-6. View test traffic in Security Events by filtering for **Service** > **API Shield - Schema Validation**.
-7. Optional:
-   - Set a single endpoint to `block`.
-   - Set the Schema Validation zone-wide to `block`.
-   - Temporarily override all schemas zone-wide to `none`.
-   - Remove the temporary override.
+	1. Upload a schema. 2. Ensure that your endpoints are added in Endpoint
+	Management. 3. Set the schema to `active` if it is not already done. 4. Set
+	the Schema Validation zone-wide action from `none` to `log`. 5. Send test
+	traffic that violates the schema. 6. View test traffic in Security Events by
+	filtering for **Service** > **API Shield - Schema Validation**. 7. Optional: -
+	Set a single endpoint to `block`. - Set the Schema Validation zone-wide to
+	`block`. - Temporarily override all schemas zone-wide to `none`. - Remove the
+	temporary override.
 </Steps>
 
 Cloudflare recommends you to rerun test traffic and monitor the HTTP response codes after changing any settings to ensure Schema Validation is operating as expected.
@@ -50,34 +47,30 @@ Endpoints must be listed in Endpoint Management for Schema Validation to match r
 Upload a schema via the v4 API using `POST`. This example requires a `example_schema.yaml` schema file in the current folder.
 
 <APIRequest
-  path="/zones/{zone_id}/schema_validation/schemas"
-  method="POST"
-  json={{
-    kind: "openapi_v3",
-    name: "example_schema",
-    source: "<SOURCE>",
-    validation_enabled: true
-  }}
+	path="/zones/{zone_id}/schema_validation/schemas"
+	method="POST"
+	json={{
+		kind: "openapi_v3",
+		name: "example_schema",
+		source: "<SOURCE>",
+		validation_enabled: true,
+	}}
 />
 
 ```json output
 {
-    "result":
-    {
-        "schema":
-        {
-            "schema_id": "af632e95-c986-4738-a67d-2ac09995017a",
-            "name": "example_schema",
-            "kind": "openapi_v3",
-            "source": "<SOURCE>",
-            "created_at": "2023-04-03T15:10:08.902309Z"
-        }
-    },
-    "success": true,
-    "errors":
-    [],
-    "messages":
-    []
+	"result": {
+		"schema": {
+			"schema_id": "af632e95-c986-4738-a67d-2ac09995017a",
+			"name": "example_schema",
+			"kind": "openapi_v3",
+			"source": "<SOURCE>",
+			"created_at": "2023-04-03T15:10:08.902309Z"
+		}
+	},
+	"success": true,
+	"errors": [],
+	"messages": []
 }
 ```
 
@@ -86,28 +79,25 @@ By default, Schema Validation is disabled for an uploaded schema so that you can
 Use a `PATCH` request to activate a schema after inspection.
 
 <APIRequest
-  path="/zones/{zone_id}/api_gateway/user_schemas/{schema_id}"
-  method="PATCH"
-  json={{
-    validation_enabled: true,
-  }}
+	path="/zones/{zone_id}/api_gateway/user_schemas/{schema_id}"
+	method="PATCH"
+	json={{
+		validation_enabled: true,
+	}}
 />
 
 ```json output
 {
-    "result":
-    {
-        "schema_id": "0bf58160-5da3-48ac-80a9-069f9642c1a0",
-        "name": "api_schema.json",
-        "kind": "openapi_v3",
-        "validation_enabled": true,
-        "created_at": "0001-01-01T00:00:00Z"
-    },
-    "success": true,
-    "errors":
-    [],
-    "messages":
-    []
+	"result": {
+		"schema_id": "0bf58160-5da3-48ac-80a9-069f9642c1a0",
+		"name": "api_schema.json",
+		"kind": "openapi_v3",
+		"validation_enabled": true,
+		"created_at": "0001-01-01T00:00:00Z"
+	},
+	"success": true,
+	"errors": [],
+	"messages": []
 }
 ```
 
@@ -125,23 +115,22 @@ curl --request GET "https://api.cloudflare.com/client/v4/zones/{zone_id}/api_gat
 
 ```json output
 {
-    "result":
-        [
-          {
-              "method": "GET",
-              "host": "example.com",
-              "endpoint": "/pets"
-          }
-     ],
-    "success": true,
-    "errors": [],
-    "messages": [],
-    "result_info": {
-        "page": 1,
-        "per_page": 30,
-        "count": 1,
-        "total_count": 1
-    }
+	"result": [
+		{
+			"method": "GET",
+			"host": "example.com",
+			"endpoint": "/pets"
+		}
+	],
+	"success": true,
+	"errors": [],
+	"messages": [],
+	"result_info": {
+		"page": 1,
+		"per_page": 30,
+		"count": 1,
+		"total_count": 1
+	}
 }
 ```
 
@@ -164,20 +153,18 @@ curl "https://api.cloudflare.com/client/v4/zones/{zone_id}/api_gateway/operation
 
 ```json output
 {
-    "result":  [
-            {
-                "operation_id": "6c734fcd-455d-4040-9eaa-dbb3830526ae",
-                "method": "GET",
-                "host": "example.com",
-                "endpoint": "/pets",
-                "last_updated": "2023-04-04T16:07:37.575971Z"
-         }
-     ],
-    "success": true,
-    "errors":
-    [],
-    "messages":
-    []
+	"result": [
+		{
+			"operation_id": "6c734fcd-455d-4040-9eaa-dbb3830526ae",
+			"method": "GET",
+			"host": "example.com",
+			"endpoint": "/pets",
+			"last_updated": "2023-04-04T16:07:37.575971Z"
+		}
+	],
+	"success": true,
+	"errors": [],
+	"messages": []
 }
 ```
 
@@ -299,10 +286,7 @@ You can get an overview of the schemas currently active on a zone using `GET`.
 
 `validation_enabled=true` is an optional parameter.
 
-<APIRequest
-  path="/zones/{zone_id}/schema_validation/schemas"
-  method="GET"
-/>
+<APIRequest path="/zones/{zone_id}/schema_validation/schemas" method="GET" />
 
 ```json output
 {
@@ -334,18 +318,16 @@ We recommend using the query parameter `omit_source=true` to only display active
 You can delete a schema using `DELETE`.
 
 <APIRequest
-  path="/zones/{zone_id}/schema_validation/schemas/{schema_id}"
-  method="DELETE"
+	path="/zones/{zone_id}/schema_validation/schemas/{schema_id}"
+	method="DELETE"
 />
 
 ```json output
 {
-    "result":  null,
-    "success": true,
-    "errors":
-    [],
-    "messages":
-    []
+	"result": null,
+	"success": true,
+	"errors": [],
+	"messages": []
 }
 ```
 
@@ -360,44 +342,36 @@ curl "https://api.cloudflare.com/client/v4/zones/{zone_id}/api_gateway/operation
 
 ```json output
 {
-    "result":
-    {
-        "operation_id": "5c734fcd-455d-4040-9eaa-dbb3830526ae",
-        "method": "PATCH",
-        "host": "example.com",
-        "endpoint": "/pets",
-        "last_updated": "2023-04-04T16:07:37.575971Z",
-        "features":
-        {
-            "parameter_schemas":
-            {
-                "last_updated": "2023-04-03T20:11:55.879006Z",
-                "parameter_schemas":
-                {
-                    "responses": null,
-                    "parameters":
-                    [
-                        {
-                            "in": "query",
-                            "name": "var1",
-                            "schema":
-                            {
-                                "type": "string"
-                            },
-                            "required": true,
-                            "description": "Sufficient requests have been observed for this parameter to provide high confidence in this parameter schema."
-                        }
-                    ],
-                    "x-cf-parameter-schemas": "operation schema with automatically learned path and query parameters"
-                }
-            }
-        }
-    },
-    "success": true,
-    "errors":
-    [],
-    "messages":
-    []
+	"result": {
+		"operation_id": "5c734fcd-455d-4040-9eaa-dbb3830526ae",
+		"method": "PATCH",
+		"host": "example.com",
+		"endpoint": "/pets",
+		"last_updated": "2023-04-04T16:07:37.575971Z",
+		"features": {
+			"parameter_schemas": {
+				"last_updated": "2023-04-03T20:11:55.879006Z",
+				"parameter_schemas": {
+					"responses": null,
+					"parameters": [
+						{
+							"in": "query",
+							"name": "var1",
+							"schema": {
+								"type": "string"
+							},
+							"required": true,
+							"description": "Sufficient requests have been observed for this parameter to provide high confidence in this parameter schema."
+						}
+					],
+					"x-cf-parameter-schemas": "operation schema with automatically learned path and query parameters"
+				}
+			}
+		}
+	},
+	"success": true,
+	"errors": [],
+	"messages": []
 }
 ```
 
@@ -410,14 +384,11 @@ curl --request PUT "https://api.cloudflare.com/client/v4/zones/{zone_id}/api_gat
 
 ```json output
 {
-    "result": null,
-    "success": true,
-    "errors":
-    [],
-    "messages":
-    []
+	"result": null,
+	"success": true,
+	"errors": [],
+	"messages": []
 }
-
 ```
 
 :::note
