@@ -144,6 +144,8 @@
 /agents/api-reference/build-mcp-server/ /agents/guides/build-mcp-server/ 301
 /agents/api-reference/sdk/ /agents/api-reference/ 301
 /agents/guides/build-mcp-server/ /agents/guides/remote-mcp-server/ 301
+/agents/getting-started/build-a-chat-agent/ /agents/ 301
+/agents/getting-started/prompting/ /agents/getting-started/get-started/ 301
 
 # ai
 /ai/ /use-cases/ai/ 301
