@@ -1,0 +1,137 @@
+---
+import { JSDocTagInfo, Project } from "ts-morph";
+import RawTypes from "@cloudflare/workers-types/experimental/index.d.ts?raw";
+import { marked } from "marked";
+import AnchorHeading from "./AnchorHeading.astro";
+import Type from "./Type.astro";
+import { Code } from "@astrojs/starlight/components";
+import { z } from "astro:schema";
+
+type Props = z.input<typeof props>;
+
+const props = z
+	.object({
+		name: z.string(),
+	})
+	.strict();
+
+const { name: interfaceName } = props.parse(Astro.props);
+
+function JSDocToMarkdown(jsdoc: JSDocTagInfo[]) {
+	return marked.parse(
+		jsdoc
+			.map((tag) => {
+				return tag
+					.getText()
+					.filter((part) => part.kind === "text")
+					.map((part) => {
+						return part.text;
+					})
+					.join(" ");
+			})
+			.join("\n"),
+		{ async: false },
+	);
+}
+
+const project = new Project();
+const sourceFile = project.createSourceFile("index.d.ts", RawTypes);
+
+const int = sourceFile.getInterface(interfaceName);
+
+if (!int) {
+	throw new Error(
+		`[WorkersTypesInterface] Could not find interface "${interfaceName}"`,
+	);
+}
+
+const methods = int.getMethods();
+
+if (!methods || methods.length === 0) {
+	throw new Error(
+		`[WorkersTypesInterface] Could not find any methods for interface "${interfaceName}"`,
+	);
+}
+---
+
+<AnchorHeading title={interfaceName} depth={2} />
+<Code lang="ts" code={int.print()} wrap={true} />
+<AnchorHeading title="Methods" depth={3} slug={`${interfaceName}-methods`} />
+{
+	methods.map((method) => {
+		const methodName = method.getName();
+		const signature = method.getSignature();
+
+		if (!signature) {
+			throw new Error(
+				`[WorkersTypesInterface] Could not find signature for method "${interfaceName}#${methodName}"`,
+			);
+		}
+
+		const comment = signature
+			.getDocumentationComments()
+			.map((comment) => {
+				return comment.getText();
+			})
+			.join("\n");
+
+		const jsdoc = signature.getJsDocTags();
+		const returnsJsdoc = jsdoc.find((tag) => tag.getName() === "returns");
+
+		const parameters = signature.getParameters();
+		const returns = signature.getReturnType();
+
+		return (
+			<>
+				<AnchorHeading
+					title={`\`${methodName}()\``}
+					depth={4}
+					slug={`${interfaceName}-${methodName}`}
+				/>
+				<p>{comment}</p>
+				<AnchorHeading
+					title="Signature"
+					depth={5}
+					slug={`${interfaceName}-${methodName}-signature`}
+				/>
+				<Code lang="ts" code={method.print()} wrap={true} />
+				<AnchorHeading
+					title="Parameters"
+					depth={5}
+					slug={`${interfaceName}-${methodName}-parameters`}
+				/>
+				<ul>
+					{parameters?.map((param) => {
+						const type = param.getDeclarations()[0].getType();
+						const jsdoc = param.getJsDocTags();
+
+						const markdown = JSDocToMarkdown(jsdoc);
+
+						return (
+							<li>
+								<span>
+									<code>{param.getName()}</code>
+								</span>{" "}
+								<Type text={type.getText()} />
+								<Fragment set:html={markdown} />
+							</li>
+						);
+					})}
+				</ul>
+				<AnchorHeading
+					title="Returns"
+					depth={5}
+					slug={`${interfaceName}-${methodName}-returns`}
+				/>
+				<ul>
+					<li>
+						<Type text={returns?.getText()} />
+						<Fragment
+							set:html={returnsJsdoc ? JSDocToMarkdown([returnsJsdoc]) : ""}
+						/>
+					</li>
+				</ul>
+			</>
+		);
+	})
+}

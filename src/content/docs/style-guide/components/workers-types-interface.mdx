@@ -1,0 +1,37 @@
+---
+title: Workers Types Interface
+styleGuide:
+  component: WorkersTypesInterface
+---
+
+:::caution
+
+This component should be considered a work-in-progress and there may be parts of an interface not properly represented yet.
+
+:::
+
+This component uses [`ts-morph`](https://ts-morph.com/) to generate documentation about the methods on an interface from `@cloudflare/workers-types`, including their parameters and return types.
+
+## Import
+
+```mdx
+import { WorkersTypesInterface } from "~/components";
+```
+
+## Usage
+
+```mdx live
+import { WorkersTypesInterface } from "~/components";
+
+<WorkersTypesInterface name="ForwardableEmailMessage" />
+```
+
+## `<WorkersTypesInterface>` Props
+
+### `name`
+
+**required**
+
+**type:** `string`
+
+The name of the TypeScript interface.
