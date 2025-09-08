@@ -12,6 +12,8 @@ import { Render } from "~/components";
 
 You can apply network and HTTP Gateway policies alongside [Magic Firewall](/magic-firewall/) policies (for L3/4 traffic filtering) to Internet-bound traffic or private traffic entering the Cloudflare network via Magic WAN.
 
+Additionally, you can point the DNS resolver for your Magic WAN networks to the shared IP addresses for the Gateway DNS resolver. When you resolve DNS queries from Magic WAN through Gateway, Gateway will log the queries with the private source IP. You can use the private source IP to create [resolver policies](/cloudflare-one/policies/gateway/resolver-policies/) for queries intended for [internal DNS records](/cloudflare-one/policies/gateway/resolver-policies/#internal-dns).
+
 ## HTTPS filtering
 
 In order to inspect HTTPS traffic, you need to install a Cloudflare root certificate on each client device. You can use the [WARP client](/cloudflare-one/connections/connect-devices/warp/) to [automatically install a Cloudflare certificate](/cloudflare-one/connections/connect-devices/user-side-certificates/automated-deployment/) on supported devices. If your device or application does not support certificate installation via WARP, you can [manually install a certificate](/cloudflare-one/connections/connect-devices/user-side-certificates/manual-deployment/). A certificate is required for Cloudflare to [decrypt TLS](/cloudflare-one/policies/gateway/http-policies/tls-decryption/).
@@ -50,6 +52,7 @@ By default, TCP, UDP, and ICMP traffic routed through Magic WAN tunnels and dest
 Contact your account team to enable Gateway filtering for traffic destined to routes behind Magic WAN tunnels.
 
 If enabled, by default TCP/UDP traffic meeting **all** the following criteria will be proxied/filtered by Cloudflare Gateway:
+
 - Both source and destination IPs are part of either [RFC1918](https://datatracker.ietf.org/doc/html/rfc1918) space, [WARP](/cloudflare-one/connections/connect-devices/warp/), [BYO](/byoip/) or [Leased IPs](/magic-transit/cloudflare-ips/)
 - Source port must be a client port strictly higher than `1023`
 - Destination port is a well-known port lower than `1024`
