@@ -151,6 +151,7 @@ A Durable Object is considered hibernatable any time that it is not waiting for 
 
 - As an exception, a WebSocket request which has explicitly been accepted using the [WebSocket hibernation API](/durable-objects/best-practices/websockets/#websocket-hibernation-api) allows a Durable Object to hibernate even while the WebSocket is still connected.
 
-Duration billing stops once a Durable Object is in a hibernatable state. When a Durable Object has been in a hibernatable state for 10 consecutive seconds, it hibernates.
+Duration billing stops once a Durable Object is in a hibernatable state. When a Durable Object has been in a hibernatable state for 10 consecutive seconds, it hibernates and gets evicted from memory.
+This time of 10s while being in a hibernatable state is not billed.
 
 Even if a Durable Object never becomes hibernatable, it will still be evicted once all clients have gone away. A Durable Object is considered to have clients if any other Worker currently holds a stub pointing to the Durable Object, or is waiting for a response from the Durable Object. An incoming WebSocket connection counts as a client. If the object is currently responding to an alarm event, this also counts as having a client. When not hibernatable, a Durable Object will be evicted from memory after it has had no client for 70-140 seconds (the exact interval varies). But again, if the object is hibernatable, then the 10-second hibernation timeout takes precedence and the 70-140 second no-client timeout is moot.
