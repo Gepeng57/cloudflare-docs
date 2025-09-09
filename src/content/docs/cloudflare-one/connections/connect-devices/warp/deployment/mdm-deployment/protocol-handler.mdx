@@ -6,11 +6,11 @@ sidebar:
   label: Automated WARP registration
 ---
 
-import { Render } from "~/components";
+import { Render, GlossaryTooltip } from "~/components";
 
-Administrators can automate the WARP login process on managed devices and minimize the number of clicks required from an end user.
+Administrators can automate WARP registration on managed devices and minimize the number of clicks required from an end user.
 
-End users typically need to complete several steps in their browser in order to login to WARP:
+During the default WARP enrollment process, end users typically need to complete several steps in order to login:
 
 1. Review and accept Cloudflare's privacy policy in the WARP client GUI.
 2. Select their identity provider from the Cloudflare Access login screen.
@@ -25,8 +25,35 @@ If you are looking to eliminate all user interaction, you can [enroll devices us
 
 ## Turn off onboarding screen
 
+To skip the Terms and Conditions screens that are usually presented to users, set the [`onboarding` parameter](/cloudflare-one/connections/connect-devices/warp/deployment/mdm-deployment/) to `false` in your [MDM deployment file](/cloudflare-one/connections/connect-devices/warp/deployment/mdm-deployment/). Here is an example `mdm.xml` file:
+
+```xml
+<dict>
+  <key>organization</key>
+  <string>your-team-name</string>
+	<key>onboarding</key>
+	<false/>
+</dict>
+```
+
 ## Turn on Instant Auth
 
-If you plan to only allow access via a single IdP, turn on **Instant Auth** in your [device enrollment permissions](/cloudflare-one/connections/connect-devices/warp/deployment/device-enrollment/#set-device-enrollment-permissions). This allow users to skip the Cloudflare Access login page and go directly to your SSO login event.
+If you are only using one identity provider for device enrollment, turn on **Instant Auth** in your [device enrollment permissions](/cloudflare-one/connections/connect-devices/warp/deployment/device-enrollment/#set-device-enrollment-permissions). This allow users to skip the Cloudflare Access login page and go directly to your SSO login event.
 
-##
+## Allow browser to launch WARP
+
+You can pre-configure your browser to automatically launch the Cloudflare WARP application from your <GlossaryTooltip term="team domain">Zero Trust team domain</GlossaryTooltip>. This will allow the user to skip the **Open Cloudflare WARP.app** popup that is shown after a successful login.
+
+![Browser popup requesting permission to open WARP](~/assets/images/cloudflare-one/connections/warp-protocol-handler.png)
+
+### Windows
+
+
+
+### macOS
+
+
+
+
+
+
