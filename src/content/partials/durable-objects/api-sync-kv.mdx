@@ -6,46 +6,25 @@ import {Type, MetaInfo} from "~/components";
 
 ### `get`
 
-- <code>ctx.storage.get(key <Type text="string" />, options <Type text="Object" />{" "}<MetaInfo text="optional" />)</code>: <Type text="Promise<any>" />
+- <code>ctx.storage.kv.get(key <Type text="string" />, options <Type text="Object" />{" "}<MetaInfo text="optional" />)</code>: <Type text="Any, undefined" />
   - Retrieves the value associated with the given key. The type of the returned value will be whatever was previously written for the key, or undefined if the key does not exist.
-
-- <code>ctx.storage.get(keys <Type text="Array<string>" />, options <Type text="Object" /> <MetaInfo text="optional" />)</code>: <Type text="Promise<Map<string, any>>" />
-  - Retrieves the values associated with each of the provided keys. The type of each returned value in the [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) will be whatever was previously written for the corresponding key. Results in the `Map` will be sorted in increasing order of their UTF-8 encodings, with any requested keys that do not exist being omitted. Supports up to 128 keys at a time.
-
-#### Supported options
-
-- `allowConcurrency`: <Type text='boolean' />
-  - By default, the system will pause delivery of I/O events to the Object while a storage operation is in progress, in order to avoid unexpected race conditions. Pass `allowConcurrency: true` to opt out of this behavior and allow concurrent events to be delivered.
-
-- `noCache`: <Type text='boolean'/>
-  - If true, then the key/value will not be inserted into the in-memory cache. If the key is already in the cache, the cached value will be returned, but its last-used time will not be updated. Use this when you expect this key will not be used again in the near future. This flag is only a hint. This flag will never change the semantics of your code, but it may affect performance.
 
 ### `put`
 
-- <code>put(key <Type text="string" />, value <Type text="any" />)</code>: <Type text="void" />
+- <code>ctx.storage.kv.put(key <Type text="string" />, value <Type text="any" />)</code>: <Type text="void" />
   - Stores the value and associates it with the given key. The value can be any type supported by the [structured clone algorithm](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm), which is true of most types.
 
     The size of keys and values have different limits depending on the Durable Object storage backend you are using. Refer to either:
-    - [SQLite-backed Durable Object limits](/durable-objects/platform/limits/#sqlite-backed-durable-objects-general-limits)
-    - [KV-backed Durable Object limits](/durable-objects/platform/limits/#key-value-backed-durable-objects-general-limits).<br/><br/>
-
-- <code>put(entries <Type text="Object" />, options <Type text="Object" /> <MetaInfo text="optional" />)</code>: <Type text="Promise" />
-  - Takes an Object and stores each of its keys and values to storage.
-  - Each value can be any type supported by the [structured clone algorithm](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm), which is true of most types.
-  - Supports up to 128 key-value pairs at a time. The size of keys and values have different limits depending on the flavor of Durable Object you are using. Refer to either:
-    - [SQLite-backed Durable Object limits](/durable-objects/platform/limits/#sqlite-backed-durable-objects-general-limits)
-    - [KV-backed Durable Object limits](/durable-objects/platform/limits/#key-value-backed-durable-objects-general-limits)
+    - [SQLite-backed Durable Object limits](/durable-objects/platform/limits/#sqlite-backed-durable-objects-general-limits)<br/><br/>
 
 ### `delete`
 
-- <code>delete(key <Type text="string" />)</code>: <Type text="boolean" />
+- <code>ctx.storage.kv.delete(key <Type text="string" />)</code>: <Type text="boolean" />
   - Deletes the key and associated value. Returns `true` if the key existed or `false` if it did not.
-
-
 
 ### `list`
 
-- <code>list(options <Type text="Object" /> <MetaInfo text="optional" />)</code>: <Type text="Iterable<string, any>" />
+- <code>ctx.storage.kv.list(options <Type text="Object" /> <MetaInfo text="optional" />)</code>: <Type text="Iterable<string, any>" />
   - Returns all keys and values associated with the current Durable Object in ascending sorted order based on the keys' UTF-8 encodings.
   - The type of each returned value in the [`Iterable`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol) will be whatever was previously written for the corresponding key.
 
