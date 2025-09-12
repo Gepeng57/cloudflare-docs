@@ -32,7 +32,7 @@ Customers can automate the [custom metadata](/cloudflare-for-platforms/cloudflar
 
 2. If you have not already done so, [associate your custom metadata to custom hostnames](/cloudflare-for-platforms/cloudflare-for-saas/security/waf-for-saas/#1-associate-custom-metadata-to-a-custom-hostname) by including the `security_tag`in the custom metadata associated with the custom hostname. The JSON blob associated with the custom hostname is fully customizable.
 
-After the association is complete, the JSON blob is added to the defined custom hostname. This blob is then associated to every incoming request and exposed in the WAF through the [`cf.hostname.metadata`](/ruleset-engine/rules-language/fields/reference/cf.hostname.metadata/) field. In the rule, you can access `cf.hostname.metadata` and get whatever data you need from that blob.
+After the association is complete, the JSON blob is added to the defined custom hostname. This blob is then associated to every incoming request and exposed in the WAF through the [`cf.hostname.metadata`](/ruleset-engine/rules-language/fields/reference/cf.hostname.metadata/) field. In the rule, you can access `cf.hostname.metadata` and get the data you need from that blob.
 
 ---
 
