@@ -36,6 +36,24 @@ If your organization onboards users to Magic WAN via an [on-ramp other than WARP
 
 You can configure the DNS resolver for your Magic WAN networks to the shared IP addresses for the Gateway DNS resolver. The Gateway DNS resolver IPs are `172.64.36.1` and `172.64.36.2`. When you resolve DNS queries from Magic WAN through Gateway, Gateway will log the queries with the private source IP. You can use the private source IP to create [resolver policies](/cloudflare-one/policies/gateway/resolver-policies/) for queries intended for [internal DNS records](/cloudflare-one/policies/gateway/resolver-policies/#internal-dns).
 
+```mermaid
+flowchart LR
+ subgraph subGraph0["Data center"]
+    direction TB
+        InternalDNS(["Internal DNS"])
+        ResolverPolicies["Resolver policies"]
+        CloudflareGatewayDNSResolver["Gateway DNS resolver"]
+  end
+    ResolverPolicies -- Retain and use</br>Source Internal IP --> InternalDNS
+    CloudflareGatewayDNSResolver -- <br> --> ResolverPolicies
+    WarpConnector["WARP Connector"] -- DHCP/DNS resolver --> IPSecTunnel["IPsec tunnel"]
+    MagicWAN["Magic WAN"] -- DHCP/DNS resolver --> IPSecTunnel
+    IPSecTunnel -- Shared IP endpoints --> CloudflareGatewayDNSResolver
+    ResolverPolicies@{ shape: proc}
+    WarpConnector@{ shape: in-out}
+    MagicWAN@{ shape: in-out}
+```
+
 ## Outbound Internet traffic
 
 By default, the following traffic routed through Magic WAN tunnels and destined to public IP addresses is proxied/filtered through Cloudflare Gateway:
